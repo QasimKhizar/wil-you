@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I have a question for you... 💗</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      min-height: 100vh;
+      background: #080810;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Stars ── */
+    #stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--dur) ease-in-out infinite;
+      animation-delay: var(--delay);
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.8); }
+      50%       { opacity: var(--op); transform: scale(1.2); }
+    }
+
+    /* ── Falling petals ── */
+    #petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .petal {
+      position: absolute;
+      top: -24px;
+      animation: fall var(--fall-dur) linear infinite;
+      animation-delay: var(--fall-delay);
+      opacity: 0;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(-24px) rotate(0deg) translateX(0);          opacity: 0;   }
+      8%   { opacity: 0.75; }
+      88%  { opacity: 0.5;  }
+      100% { transform: translateY(110vh) rotate(700deg) translateX(var(--drift)); opacity: 0; }
+    }
+
+    /* ── Card ── */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 28px;
+      padding: 56px 52px 48px;
+      max-width: 500px;
+      width: calc(100% - 40px);
+      text-align: center;
+      box-shadow:
+        0 0 90px rgba(200, 90, 150, 0.14),
+        0 0 0 1px rgba(255,255,255,0.04) inset;
+    }
+
+    .heart-icon {
+      font-size: 52px;
+      display: block;
+      margin-bottom: 22px;
+      animation: heartbeat 2s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      15%      { transform: scale(1.18); }
+      30%      { transform: scale(1);   }
+      45%      { transform: scale(1.1); }
+      60%      { transform: scale(1);   }
+    }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    .title em {
+      font-style: italic;
+      color: #f9a8c9;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: rgba(255,255,255,0.42);
+      margin-bottom: 38px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .question {
+      font-family: 'Playfair Display', serif;
+      font-size: 23px;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 36px;
+      line-height: 1.55;
+      font-style: italic;
+    }
+
+    /* ── Buttons ── */
+    .buttons {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      min-height: 60px;
+    }
+
+    .btn-yes {
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #e8607a 0%, #c94b8a 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 17px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.4px;
+      box-shadow: 0 4px 28px rgba(201, 75, 138, 0.45);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-yes:hover {
+      transform: scale(1.07);
+      box-shadow: 0 6px 36px rgba(201, 75, 138, 0.65);
+    }
+    .btn-yes:active { transform: scale(0.97); }
+
+    .btn-no {
+      padding: 15px 40px;
+      background: transparent;
+      color: rgba(255,255,255,0.32);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 50px;
+      font-size: 17px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      cursor: default;
+      letter-spacing: 0.4px;
+      position: relative;
+      transition: none;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: auto;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 30px 0;
+    }
+
+    /* ── Views ── */
+    .view { display: none; }
+    .view.active { display: block; }
+    #initialView { display: block; transition: opacity 0.35s ease; }
+
+    /* ── Calendar view ── */
+    .cal-emoji {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 18px;
+    }
+    .cal-header {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .cal-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.42);
+      margin-bottom: 28px;
+    }
+
+    .datetime-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .field-label {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .field-label span {
+      font-size: 11px;
+      color: rgba(255,255,255,0.42);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .field-label input {
+      width: 100%;
+      padding: 13px 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      color: white;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.25s;
+      color-scheme: dark;
+    }
+    .field-label input:focus {
+      border-color: rgba(232, 96, 122, 0.65);
+    }
+
+    .btn-confirm {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #e8607a 0%, #c94b8a 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 28px rgba(201, 75, 138, 0.38);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-confirm:hover {
+      transform: scale(1.025);
+      box-shadow: 0 6px 36px rgba(201, 75, 138, 0.55);
+    }
+
+    /* ── Success view ── */
+    .big-emoji {
+      font-size: 60px;
+      display: block;
+      margin-bottom: 18px;
+      animation: popIn 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .confirm-detail {
+      font-size: 15px;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.75;
+    }
+    .confirm-sub {
+      margin-top: 14px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.32);
+    }
+
+    /* ── Error toast ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(232, 96, 122, 0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 100;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div id="petals"></div>
+
+<div class="card">
+
+  <!-- Initial question view -->
+  <div id="initialView">
+    <span class="heart-icon">💗</span>
+    <h1 class="title">Hey <em>you</em>,</h1>
+    <p class="subtitle">there's something I've been meaning to ask...</p>
+    <p class="question">"Would you like to go on a date with me?"</p>
+    <div class="buttons" id="buttonArea">
+      <button class="btn-yes" onclick="sayYes()">Yes! 🥰</button>
+      <button class="btn-no" id="noBtn">No</button>
+    </div>
+  </div>
+
+  <!-- Pick a date view -->
+  <div class="view" id="calendarView">
+    <span class="cal-emoji">🗓️</span>
+    <h2 class="cal-header">When works for you?</h2>
+    <p class="cal-sub">Pick a date and time — I'll make it unforgettable ✨</p>
+    <div class="datetime-inputs">
+      <label class="field-label">
+        <span>Date</span>
+        <input type="date" id="dateInput" />
+      </label>
+      <label class="field-label">
+        <span>Time</span>
+        <input type="time" id="timeInput" />
+      </label>
+    </div>
+    <button class="btn-confirm" onclick="confirmDate()">Lock it in 💌</button>
+  </div>
+
+  <!-- Success view -->
+  <div class="view" id="successView">
+    <span class="big-emoji">🥳</span>
+    <h2 class="success-title">It's a date!</h2>
+    <div class="divider"></div>
+    <p class="confirm-detail" id="confirmMsg"></p>
+    <p class="confirm-sub">I can't wait 💕</p>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ── Generate stars ── */
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 140; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.8 + 0.5;
+    s.style.cssText = [
+      `width:${size}px`, `height:${size}px`,
+      `left:${Math.random() * 100}%`, `top:${Math.random() * 100}%`,
+      `--dur:${2 + Math.random() * 5}s`,
+      `--delay:-${Math.random() * 5}s`,
+      `--op:${0.25 + Math.random() * 0.75}`
+    ].join(';');
+    starsEl.appendChild(s);
+  }
+
+  /* ── Generate falling petals ── */
+  const petalsEl = document.getElementById('petals');
+  const emojiSet = ['🌸', '🌸', '🌷', '🌺', '✿'];
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+    const drift = (Math.random() - 0.5) * 220;
+    p.style.cssText = [
+      `left:${Math.random() * 100}%`,
+      `font-size:${12 + Math.random() * 16}px`,
+      `--fall-dur:${7 + Math.random() * 9}s`,
+      `--fall-delay:-${Math.random() * 14}s`,
+      `--drift:${drift}px`
+    ].join(';');
+    petalsEl.appendChild(p);
+  }
+
+  /* ── "No" button escape logic ── */
+  const noBtn = document.getElementById('noBtn');
+  const buttonArea = document.getElementById('buttonArea');
+
+  function escapeNoBtn() {
+    const areaRect = buttonArea.getBoundingClientRect();
+    const cardRect = noBtn.closest('.card').getBoundingClientRect();
+
+    const maxX = (cardRect.width / 2) - noBtn.offsetWidth / 2 - 20;
+    const maxY = 80;
+
+    const newX = (Math.random() - 0.5) * 2 * maxX;
+    const newY = (Math.random() - 0.5) * 2 * maxY;
+
+    noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+  }
+
+  noBtn.addEventListener('mouseenter', escapeNoBtn);
+  noBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    escapeNoBtn();
+  }, { passive: false });
+
+  /* ── Yes! ── */
+  function sayYes() {
+    const iv = document.getElementById('initialView');
+    iv.style.opacity = '0';
+    iv.style.pointerEvents = 'none';
+    setTimeout(() => {
+      iv.style.display = 'none';
+      showView('calendarView');
+
+      // Set minimum date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('dateInput').min = tomorrow.toISOString().split('T')[0];
+    }, 350);
+  }
+
+  /* ── Confirm date ── */
+  function confirmDate() {
+    const dateVal = document.getElementById('dateInput').value;
+    const timeVal = document.getElementById('timeInput').value;
+
+    if (!dateVal || !timeVal) {
+      showToast('Please pick both a date and a time 🥺');
+      return;
+    }
+
+    const dateObj = new Date(dateVal + 'T' + timeVal);
+    const dateStr = dateObj.toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = dateObj.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    /* Show success screen */
+    showView('successView');
+    document.getElementById('confirmMsg').innerHTML =
+      `📅 <strong>${dateStr}</strong><br>⏰ <strong>${timeStr}</strong>`;
+
+    /* ── Send to your local server (run server.js locally) ── */
+    fetch('https://your-server-url.com/date', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: dateVal,
+        time: timeVal,
+        dateFormatted: dateStr,
+        timeFormatted: timeStr,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(() => {
+      /* Server might not be running — that's fine, we still show success */
+    });
+
+    /* Always visible in browser console as a fallback */
+    console.log('%c💕 DATE CONFIRMED!', 'font-size:22px; color:#e8607a; font-weight:bold;');
+    console.log(`%c📅 ${dateStr}  ⏰ ${timeStr}`, 'font-size:15px; color:#c94b8a;');
+  }
+
+  /* ── Helpers ── */
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
