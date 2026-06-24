@@ -452,7 +452,7 @@
       `📅 <strong>${dateStr}</strong><br>⏰ <strong>${timeStr}</strong>`;
 
     /* ── Send to your local server (run server.js locally) ── */
-    fetch('http://192.168.1.77:3000/date', {
+    fetch('http://<your-server-ip>/date', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
